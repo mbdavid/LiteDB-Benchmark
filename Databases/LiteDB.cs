@@ -10,7 +10,7 @@ namespace LiteDB_Benchmark
 {
     public class LiteDBTest : Test
     {
-        public virtual string ConnectionString { get { return "test.db"; } }
+        public virtual string ConnectionString { get { return "filename=test.db;journal=true"; } }
 
         private LiteDB.LiteEngine _db;
         private LiteDB.Collection<Customer> _col;
@@ -29,7 +29,7 @@ namespace LiteDB_Benchmark
 
         public override void CreateIndex()
         {
-            _col.EnsureIndex("Index");
+            _col.EnsureIndex("MyGuid");
         }
 
         public override void FetchRandom(int count, int max)
@@ -38,9 +38,9 @@ namespace LiteDB_Benchmark
 
             for (var i = 0; i < count; i++)
             {
-                var index = rnd.Next(1, max);
+                var id = rnd.Next(1, max);
 
-                var doc = _col.FindOne(Query.EQ("Index", index));
+                var doc = _col.FindById(id);
 
                 if (doc == null) throw new NullReferenceException();
             }
@@ -50,9 +50,9 @@ namespace LiteDB_Benchmark
         {
             _db.BeginTrans();
 
-            for (var i = 1; i <= count; i++)
+            for (var id = 1; id <= count; id++)
             {
-                var doc = _col.FindOne(Query.EQ("Index", i));
+                var doc = _col.FindById(id);
                 doc.Description = Helper.LoremIpsum(15, 15, 3, 3, 4);
                 _col.Update(doc);
             }
@@ -62,7 +62,7 @@ namespace LiteDB_Benchmark
 
         public override void Delete(int count)
         {
-            _col.Delete(Query.LTE("Index", count));
+            _col.Delete(Query.LTE("_id", count));
         }
 
         public override void Upload(string filename)
@@ -80,5 +80,10 @@ namespace LiteDB_Benchmark
         {
             _db.Dispose();
         }
+    }
+
+    public class LiteDBNoJournalTest : LiteDBTest
+    {
+        public override string ConnectionString { get { return "filename=test-noj.db;journal=false"; } }
     }
 }

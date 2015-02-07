@@ -32,7 +32,7 @@ namespace LiteDB_Benchmark
 
         public override void CreateIndex()
         {
-            _col.CreateIndex("Index");
+            _col.CreateIndex("MyGuid");
         }
 
         public override void FetchRandom(int count, int max)
@@ -41,9 +41,9 @@ namespace LiteDB_Benchmark
 
             for (var i = 0; i < count; i++)
             {
-                var r = rnd.Next(1, max);
+                var id = rnd.Next(1, max);
 
-                var doc = _col.FindOne(Query.EQ("Index", r));
+                var doc = _col.FindOneById(id);
 
                 if (doc == null) throw new NullReferenceException();
             }
@@ -51,9 +51,9 @@ namespace LiteDB_Benchmark
 
         public override void Update(int count)
         {
-            for (var i = 1; i <= count; i++)
+            for (var id = 1; id <= count; id++)
             {
-                var doc = _col.FindOne(Query.EQ("Index", i));
+                var doc = _col.FindOneById(id);
                 doc.Description = Helper.LoremIpsum(15, 15, 3, 3, 4);
                 _col.Save(doc);
             }
@@ -61,7 +61,7 @@ namespace LiteDB_Benchmark
 
         public override void Delete(int count)
         {
-            _col.Remove(Query.LTE("Index", count));
+            _col.Remove(Query.LTE("_id", count));
         }
 
         public override void Upload(string filename)

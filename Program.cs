@@ -16,7 +16,8 @@ namespace LiteDB_Benchmark
             var tests = new List<Test>
             {
                 new MongoDBTest(),
-                new LiteDBTest()
+                new LiteDBTest(),
+                new LiteDBNoJournalTest()
             };
 
             for (var round = 1; round <= rounds; round++)
@@ -24,10 +25,10 @@ namespace LiteDB_Benchmark
                 foreach (var test in tests)
                 {
                     test.Run(round, 
-                        insert: 20000, 
-                        fetch: 1000, 
-                        update: 500, 
-                        delete: 1000, 
+                        insert: 15000, 
+                        fetch: 10000, 
+                        update: 1000, 
+                        delete: 2000, 
                         fileSizeMB: 50);
                 }
             }
