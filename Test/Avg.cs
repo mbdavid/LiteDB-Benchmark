@@ -13,12 +13,15 @@ namespace LiteDB_Benchmark
         /// </summary>
         public static double Avg2(this List<Dictionary<string, long>> list, string key)
         {
-            var max = list.Max(x => x[key]);
-            var min = list.Min(x => x[key]);
             var nlist = new List<Dictionary<string, long>>(list);
 
-            nlist.Remove(nlist.First(x => x[key] == max));
-            nlist.Remove(nlist.First(x => x[key] == min));
+            if (list.Count >= 5)
+            {
+                var max = list.Max(x => x[key]);
+                var min = list.Min(x => x[key]);
+                nlist.Remove(nlist.First(x => x[key] == max));
+                nlist.Remove(nlist.First(x => x[key] == min));
+            }
 
             return nlist.Average(x => x[key]);
         }
